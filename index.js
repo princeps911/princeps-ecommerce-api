@@ -15,7 +15,7 @@ app.use(express.json());
 
 // Basic route
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to Prince E-commerce API!' });
+  res.json({ message: 'Welcome to Prince Akpobasa E-commerce API!' });
 });
 
 // 404 handler
