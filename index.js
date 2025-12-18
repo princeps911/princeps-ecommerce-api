@@ -22,6 +22,9 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Prince Akpobasa E-commerce API!' });
 });
 
+const productRoutes = require('./routes/products');
+app.use('/api/v1/products', productRoutes);
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });

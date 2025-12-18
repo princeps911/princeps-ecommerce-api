@@ -88,4 +88,4 @@ const login = async (req, res) => {
     res.status(500).json({ error: 'Login failed' });
   }
 };
-module.exports = { register };
+module.exports = { register, login };
