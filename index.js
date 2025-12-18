@@ -21,14 +21,23 @@ app.use('/api/v1/auth', authRoutes);
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Prince Akpobasa E-commerce API!' });
 });
-
+//product route
 const productRoutes = require('./routes/products');
 app.use('/api/v1/products', productRoutes);
+//user route
+
+const userRoutes = require('./routes/users');
+app.use('/api/v1/users', userRoutes);
+
+//cart route
+const cartRoutes = require('./routes/cart');
+app.use('/api/v1/cart', cartRoutes);
 
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
+
 
 // Error handler
 app.use((err, req, res, next) => {
