@@ -33,6 +33,10 @@ app.use('/api/v1/users', userRoutes);
 const cartRoutes = require('./routes/cart');
 app.use('/api/v1/cart', cartRoutes);
 
+//order route
+const orderRoutes = require('./routes/orders');
+app.use('/api/v1/orders', orderRoutes);
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
