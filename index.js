@@ -14,6 +14,9 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
+const authRoutes = require('./routes/auth');
+app.use('/api/v1/auth', authRoutes);
+
 // Basic route
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Prince Akpobasa E-commerce API!' });
