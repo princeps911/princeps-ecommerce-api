@@ -4,6 +4,9 @@ const cors = require('cors');
 const morgan = require('morgan');
 const helmet = require('helmet');
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const { sequelize } = require('./models');
@@ -14,6 +17,7 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
+//auth route
 const authRoutes = require('./routes/auth');
 app.use('/api/v1/auth', authRoutes);
 
@@ -42,6 +46,8 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
+// Swagger API documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Error handler
 app.use((err, req, res, next) => {
