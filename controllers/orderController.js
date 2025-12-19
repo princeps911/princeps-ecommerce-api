@@ -1,6 +1,7 @@
 // controllers/orderController.js
-const { Cart, CartItem, Product, Order, OrderItem } = require('../models');
+const { Cart, CartItem, Product, Order, OrderItem, User } = require('../models');
 
+// Checkout
 const checkout = async (req, res) => {
   try {
     // Get user's cart
@@ -31,7 +32,7 @@ const checkout = async (req, res) => {
     const order = await Order.create({
       user_id: req.user.id,
       total_price: total,
-      status: 'completed'  // Assume success
+      status: 'completed'
     });
 
     // Create order items + update stock
@@ -43,7 +44,6 @@ const checkout = async (req, res) => {
         price_at_purchase: item.Product.price
       });
 
-      // Reduce stock
       await item.Product.update({
         stock: item.Product.stock - item.quantity
       });
@@ -66,4 +66,75 @@ const checkout = async (req, res) => {
   }
 };
 
-module.exports = { checkout };
+// Get user's orders
+const getUserOrders = async (req, res) => {
+  try {
+    const orders = await Order.findAll({
+      where: { user_id: req.user.id },
+      include: [{
+        model: OrderItem,
+        include: [Product]
+      }],
+      order: [['created_at', 'DESC']]
+    });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch orders' });
+  }
+};
+
+// Get single order
+const getOrderById = async (req, res) => {
+  try {
+    const order = await Order.findByPk(req.params.id, {
+      include: [{
+        model: OrderItem,
+        include: [Product]
+      }]
+    });
+    if (!order || order.user_id !== req.user.id) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch order' });
+  }
+};
+
+// Admin: Get all orders
+const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.findAll({
+      include: [
+        { model: User, attributes: ['username', 'email'] },
+        { model: OrderItem, include: [Product] }
+      ],
+      order: [['created_at', 'DESC']]
+    });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch orders' });
+  }
+};
+
+// Admin: Update order status
+const updateOrderStatus = async (req, res) => {
+  const { status } = req.body;
+  try {
+    const order = await Order.findByPk(req.params.id);
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+
+    await order.update({ status });
+    res.json({ message: 'Order status updated', order });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update order' });
+  }
+};
+
+module.exports = {
+  checkout,
+  getUserOrders,
+  getOrderById,
+  getAllOrders,
+  updateOrderStatus
+};
